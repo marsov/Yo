@@ -1,0 +1,14 @@
+{
+    "name": "Marsov/Yo",
+    "description": "Framework for reusable PHP components",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Mirche Arsov",
+            "email": "marsov@mignix.com"
+        }
+    ],
+    "require": {
+        "doctrine/orm": "*"
+    }
+}
