@@ -1,14 +1,15 @@
 <?php
 
 namespace Yo\Html;
+use Yo\Event\Manager;
 
 /**
  * Class Template
  * Class for representation of a html template
  * @package Yo\Html
  */
-class Template {
-
+class Template
+{
     /**
      * Template file path
      *
@@ -28,6 +29,11 @@ class Template {
      */
     protected $_htmlString;
 
+    public function preRender()
+    {
+        Manager::getInstance()->notify(__METHOD__, $this);
+    }
+
     /**
      * Returns the html as string
      *
@@ -35,6 +41,9 @@ class Template {
      */
     public function render()
     {
+        $this->preRender();
+        Manager::getInstance()->notify(__METHOD__, $this);
+
         ob_start();
         // define vars
         foreach ($this->getVars() as $varName => $varValue)
@@ -48,7 +57,14 @@ class Template {
         // TODO, store html in file
         ob_end_clean();
 
+        $this->postRender();
+
         return $this->_htmlString;
+    }
+
+    public function postRender()
+    {
+        Manager::getInstance()->notify(__METHOD__, $this);
     }
 
     /**
