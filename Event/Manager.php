@@ -1,6 +1,7 @@
 <?php
 
 namespace Yo\Event;
+use SplObjectStorage;
 
 /**
  * Class Manager
@@ -8,6 +9,96 @@ namespace Yo\Event;
  *
  * @package Yo\Event
  */
-class Manager {
+class Manager
+{
+    /**
+     * @var Manager
+     */
+    protected static $_instance;
 
+    /**
+     * @var SplObjectStorage
+     */
+    protected $_events;
+
+    /**
+     * @return SplObjectStorage
+     */
+    public function getEvents()
+    {
+        return $this->_events;
+    }
+
+    /**
+     * @return Manager
+     */
+    public static function getInstance()
+    {
+        if (self::$_instance == null) {
+            self::$_instance = new Manager();
+        }
+
+        return self::$_instance;
+    }
+
+    /**
+     * Constructor
+     */
+    protected function __construct()
+    {
+        $this->_events = new SplObjectStorage();
+    }
+
+    /**
+     * @param string $eventName
+     * @param mixed $notifier
+     */
+    public function notify($eventName, $notifier)
+    {
+        $event = $this->find($eventName);
+        if ($event instanceof Event) {
+            $event->setNotifier($notifier);
+            $event->notify();
+        }
+    }
+
+    /**
+     * @param Listener $listener
+     */
+    public function addListener(Listener $listener)
+    {
+        $events = $listener->getListOfEvents();
+        foreach ($events as $eventName) {
+            $event = $this->find($eventName);
+
+            if ($event instanceof Event) {
+                $this->_events->detach($event);
+                $event->attach($listener);
+            } else {
+                // create event object
+                $event = new YoEvent();
+                $event->setName($eventName);
+                $event->attach($listener);
+            }
+
+            $this->_events->attach($event);
+        }
+    }
+
+    /**
+     * @param $eventName
+     * @return null|Event
+     */
+    protected function find($eventName)
+    {
+        $this->_events->rewind();
+        while ($this->_events->valid()) {
+            if($this->_events->current()->getName() == $eventName) {
+                return $this->_events->current();
+            }
+            $this->_events->next();
+        }
+
+        return null;
+    }
 }
