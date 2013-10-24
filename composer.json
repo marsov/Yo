@@ -1,7 +1,7 @@
 {
     "name": "Marsov/Yo",
     "description": "Framework for reusable PHP components",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Mirche Arsov",
