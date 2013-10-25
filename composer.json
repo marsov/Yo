@@ -9,6 +9,7 @@
         }
     ],
     "require": {
-        "doctrine/orm": "*"
+        "doctrine/orm": "*",
+        "zendframework/zend-eventmanager" : "*"
     }
 }
