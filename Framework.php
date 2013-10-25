@@ -36,21 +36,25 @@ class Framework
         $this->_classLoader = new \SplClassLoader('Yo', __DIR__ ."/..");
         $this->_classLoader->register();
         $this->_bootstrap = new Bootstrap($this);
+
+        Manager::getInstance()->notify(__METHOD__, $this);
     }
 
     public function start()
     {
-
+        Manager::getInstance()->notify(__METHOD__, $this);
     }
 
     public function run()
     {
+        $this->start();
+        Manager::getInstance()->notify(__METHOD__, $this);
         $layout = new Page();
         echo $layout->render();
     }
 
     public function end()
     {
-
+        Manager::getInstance()->notify(__METHOD__, $this);
     }
 }
