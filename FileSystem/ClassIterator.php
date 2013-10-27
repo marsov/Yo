@@ -6,38 +6,19 @@ namespace Yo\FileSystem;
  * Class Iterator
  * @package Yo\FileSystem
  */
-class Iterator
+class ClassIterator extends Iterator
 {
-    /**
-     * @var \SplStack
-     */
-    protected static $_stack;
+    const NAMESPACE_SEPARATOR = '\\';
 
     /**
-     * @return \SplStack
+     * @var string
      */
-    public static function getStack()
+    protected $_baseNamespace;
+
+    public function __construct($dir, $baseNamespace)
     {
-        if (null == self::$_stack) {
-            self::$_stack = new \SplStack();
-        }
-
-        return self::$_stack;
-    }
-
-    /**
-     * @return \SplStack
-     */
-    public static function cloneStack()
-    {
-        return clone self::getStack();
-    }
-
-    protected $_baseDir;
-
-    public function __construct($dir)
-    {
-        $this->_baseDir = $dir;
+        $this->_baseNamespace = $baseNamespace;
+        parent::__construct($dir);
     }
 
     /**
@@ -54,9 +35,10 @@ class Iterator
         // build path
         $stack = self::cloneStack();
         $path = $this->_baseDir;
-
+        $namespace = $this->_baseNamespace;
         while ($stack->valid()) {
-            $path.= FileSystem::PATH_SEPARATOR . $stack->current();
+            $path.= FileSystem::PATH_SEPARATOR.$stack->current();
+            $namespace.= self::NAMESPACE_SEPARATOR.$stack->current();
             $stack->prev();
         }
 
@@ -65,12 +47,15 @@ class Iterator
             $listeners = scandir($path);
             foreach ($listeners as $listener) {
                 $t = array('.', '..');
+
                 if (!in_array($listener, $t)) {
+
                     if (is_dir($path .FileSystem::PATH_SEPARATOR. $listener)) {
                         $this->iterate($listener);
                     } else {
                         $file = $path .FileSystem::PATH_SEPARATOR. $listener;
                         if (file_exists($file)) {
+                            $args = array_merge($args, array('namespace' => $namespace));
                             $callback->process(new File($file), $args);
                         } else {
                             throw new \Exception("File $file does not exist");
@@ -83,7 +68,7 @@ class Iterator
                 self::getStack()->pop();
             }
         } else {
-            throw new \Exception("Given path is not directory");
+            throw new \Exception("Listener path is not directory");
         }
     }
 }

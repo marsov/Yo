@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<applications>
+    <app>
+        <dir>Apps</dir>
+        <namespace>Yo\\Apps</namespace>
+    </app>
+</applications>

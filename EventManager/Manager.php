@@ -89,6 +89,7 @@ namespace Yo\EventManager
                             $eventClassType = $args['event-type'];
                             if (class_exists($eventClassType)) {
                                 $event = new $eventClassType;
+                                $event->attach($listener);
                             } else {
                                 throw new InvalidArgumentException('Event type class can not be found');
                             }

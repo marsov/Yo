@@ -14,30 +14,35 @@ require '../ClassLoader/SplClassLoader.php';
 class Framework
 {
     /**
-     * @var SplClassLoader
-     */
-    protected $_classLoader;
-
-    /**
      * @var Bootstrap
      */
     protected $_bootstrap;
 
     /**
-     * @return SplClassLoader
+     * @var Environment
      */
-    public function getClassLoader()
+    protected $_environment;
+
+    /**
+     * @param Environment $env
+     */
+    public function setEnvironment($env)
     {
-        return $this->_classLoader;
+        $this->_environment = $env;
     }
 
-    public function __construct()
+    /**
+     * @return Environment
+     */
+    public function getEnvironment()
     {
-        $this->_classLoader = new \SplClassLoader('Yo', __DIR__ ."/..");
-        $this->_classLoader->register();
-        $this->_bootstrap = new Bootstrap($this);
+        return $this->_environment;
+    }
 
-        Manager::getInstance()->notify(__METHOD__, $this);
+    public function __construct(Environment $env)
+    {
+        $this->_environment = $env;
+        $this->_bootstrap = new Bootstrap($this);
     }
 
     public function start()

@@ -1,7 +1,9 @@
 <?php
 
 namespace Yo;
+use Yo\App\Loader;
 use Yo\Event\Manager;
+use Yo\FileSystem\FileSystem;
 
 /**
  * Class Bootstrap
@@ -9,9 +11,26 @@ use Yo\Event\Manager;
  */
 class Bootstrap
 {
+    const CONFIG_FILE = 'config.xml';
+
     protected $_framework;
 
+    protected $_config;
+
     protected static $_stack;
+
+    /**
+     * @var Environment
+     */
+    protected $_environment;
+
+    /**
+     * @param Environment $env
+     */
+    public function setEnvironment($env)
+    {
+        $this->_environment = $env;
+    }
 
     /**
      * @return \SplStack
@@ -40,9 +59,30 @@ class Bootstrap
     public function __construct(Framework $yo)
     {
         $this->_framework = $yo;
+
+        // this should be removed
         $this->_listenersBaseDir = __DIR__."/Listeners";
         $this->_listenersNamespace = "Yo\\Listeners";
-        $this->initListeners();
+        // end
+
+        $this->setEnvironment($yo->getEnvironment());
+        $this->initApps();
+    }
+
+    public function initConfig()
+    {
+        if (file_exists(__DIR__ . FileSystem::PATH_SEPARATOR . self::CONFIG_FILE)) {
+            $this->_config = simplexml_load_file(__DIR__ . FileSystem::PATH_SEPARATOR . self::CONFIG_FILE);
+        } else {
+            throw new \RuntimeException("Config file is not found");
+        }
+    }
+
+    public function initApps()
+    {
+        $appLoader = new Loader($this->_config->applications);
+        $appLoader->setEnvironment($this->_environment);
+        $appLoader->load();
     }
 
     public function initListeners($listenersDir = null)

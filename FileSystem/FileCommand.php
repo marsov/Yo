@@ -18,6 +18,11 @@ abstract class FileCommand implements Command
     protected $_file;
 
     /**
+     * @var mixed
+     */
+    protected $_params;
+
+    /**
      * @param File $file
      */
     public function setFile(File $file)
@@ -32,6 +37,6 @@ abstract class FileCommand implements Command
 
     public function setParams($params)
     {
-        // TODO: Implement setParams() method.
+        $this->_params = $params;
     }
 }
