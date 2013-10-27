@@ -68,17 +68,25 @@ class Manager
     public function addListener(Listener $listener)
     {
         $events = $listener->getListOfEvents();
-        foreach ($events as $eventName) {
-            $event = $this->find($eventName);
-
+        foreach ($events as $event => $args) {
             if ($event instanceof Event) {
                 $this->_events->detach($event);
                 $event->attach($listener);
             } else {
-                // create event object
-                $event = new YoEvent();
-                $event->setName($eventName);
-                $event->attach($listener);
+                // event is given by name
+                $eventName = $event;
+                $event = $this->find($eventName);
+                if ($event instanceof Event) {
+                    $event->setName($eventName);
+                    $event->attach($listener);
+                } else {
+                    if (isset($args['event-type'])) {
+                        $eventClassType = $args['event-type'];
+                        if (class_exists($eventClassType)) {
+                            $event = new $eventClassType;
+                        }
+                    }
+                }
             }
 
             $this->_events->attach($event);
