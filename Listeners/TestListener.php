@@ -12,11 +12,4 @@ class TestListener extends Listener
             'Yo\Html\Template::preRender'
         );
     }
-
-    public function update(\SplSubject $subject)
-    {
-        echo "Listener .... update<br/>";
-        var_dump($subject->getNotifier());
-        var_dump($subject);
-    }
 }
